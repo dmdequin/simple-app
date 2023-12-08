@@ -7,12 +7,15 @@ export class SimpleAppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // The code that defines your stack goes here
-
     // resource
     const bucket = new s3.Bucket(this, 'MySimpleAppBucket', {
       versioned: true,
       encryption: s3.BucketEncryption.S3_MANAGED,
+    });
+
+    new cdk.CfnOutput(this, 'MySimpleAppBucketNameExport', {
+      value: bucket.bucketName,
+      exportName: 'MySimpleAppBucketName',
     });
 
   }
