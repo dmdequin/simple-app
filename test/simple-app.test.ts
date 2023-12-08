@@ -10,7 +10,7 @@ test('Simple App Stack', () => {
     // THEN
     const template = Template.fromStack(stack);
 
-     template.templateMatches({
+    template.templateMatches({
         Resources: {
             "MySimpleAppBucket6B59014A": {
             "Type": "AWS::S3::Bucket",
@@ -32,7 +32,17 @@ test('Simple App Stack', () => {
             "DeletionPolicy": "Retain",
             },
         },
-      });
+        "Outputs": {
+            "MySimpleAppBucketNameExport": {
+             "Value": {
+              "Ref": "MySimpleAppBucket6B59014A"
+             },
+             "Export": {
+              "Name": "MySimpleAppBucketName"
+             }
+            }
+        },
+    });
 
-   template.hasResourceProperties('AWS::S3::Bucket', {});
+    template.hasResourceProperties('AWS::S3::Bucket', {});
 });
