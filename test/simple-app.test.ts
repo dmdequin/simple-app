@@ -13,33 +13,33 @@ test('Simple App Stack', () => {
     template.templateMatches({
         Resources: {
             "MySimpleAppBucket6B59014A": {
-            "Type": "AWS::S3::Bucket",
-            "Properties": {
-                "BucketEncryption": {
-                "ServerSideEncryptionConfiguration": [
-                {
-                "ServerSideEncryptionByDefault": {
-                    "SSEAlgorithm": "AES256"
-                }
-                }
-                ]
+                "Type": "AWS::S3::Bucket",
+                "Properties": {
+                    "BucketEncryption": {
+                        "ServerSideEncryptionConfiguration": [
+                            {
+                                "ServerSideEncryptionByDefault": {
+                                    "SSEAlgorithm": "AES256"
+                                }
+                            }
+                        ]
+                    },
+                    "VersioningConfiguration": {
+                    "Status": "Enabled"
+                    }
                 },
-                "VersioningConfiguration": {
-                "Status": "Enabled"
-                }
-            },
-            "UpdateReplacePolicy": "Retain",
-            "DeletionPolicy": "Retain",
+                "UpdateReplacePolicy": "Retain",
+                "DeletionPolicy": "Retain",
             },
         },
         "Outputs": {
             "MySimpleAppBucketNameExport": {
-             "Value": {
-              "Ref": "MySimpleAppBucket6B59014A"
-             },
-             "Export": {
-              "Name": "MySimpleAppBucketName"
-             }
+                "Value": {
+                    "Ref": "MySimpleAppBucket6B59014A"
+                },
+                "Export": {
+                    "Name": "MySimpleAppBucketName"
+                }
             }
         },
     });
