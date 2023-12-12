@@ -54,7 +54,7 @@ test('Resource Properties', () => {
   template.hasResourceProperties('AWS::S3::Bucket', {})
 })
 
-test('Resource Match', () => {
+test('Stack uses an S3 Bucket', () => {
   const app = new cdk.App()
   // WHEN
   const stack = new SimpleApp.SimpleAppStack(app, 'MyTestStack')
