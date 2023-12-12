@@ -2,9 +2,9 @@ import * as cdk from 'aws-cdk-lib'
 import * as lambda from 'aws-cdk-lib/aws-lambda-nodejs'
 import { type Construct } from 'constructs'
 import { aws_s3 as s3 } from 'aws-cdk-lib'
-// import { Lambda } from 'aws-cdk-lib/aws-ses-actions'
 import { Runtime } from 'aws-cdk-lib/aws-lambda'
 import path = require('path')
+import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment'
 // import * as sqs from 'aws-cdk-lib/aws-sqs'
 
 export class SimpleAppStack extends cdk.Stack {
@@ -17,10 +17,21 @@ export class SimpleAppStack extends cdk.Stack {
       encryption: s3.BucketEncryption.S3_MANAGED
     })
 
+    // eslint-disable-next-line no-new
+    new BucketDeployment(this, 'MySimpleAppPhotos', {
+      sources: [
+        Source.asset(path.join(__dirname, '..', 'photos'))
+      ],
+      destinationBucket: bucket
+    })
+
     const getPhotos = new lambda.NodejsFunction(this, 'MySimpleAppLambda', {
       runtime: Runtime.NODEJS_16_X,
       entry: path.join(__dirname, '..', 'api', 'get-photos', 'index.ts'),
-      handler: 'getPhotos'
+      handler: 'getPhotos',
+      environment: {
+        PHOTO_BUCKET_NAME: bucket.bucketName
+      }
     })
 
     // eslint-disable-next-line no-new
