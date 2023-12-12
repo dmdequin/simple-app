@@ -1,7 +1,7 @@
 import * as cdk from 'aws-cdk-lib'
 import { Template } from 'aws-cdk-lib/assertions'
 import * as SimpleApp from '../lib/simple-app-stack'
-// import 'aws-cdk-lib/assert/jest';
+// import 'aws-cdk-lib/assertions/jest'
 
 test('Simple App Stack', () => {
   const app = new cdk.App()
@@ -43,6 +43,22 @@ test('Simple App Stack', () => {
       }
     }
   })
+})
 
+test('Resource Properties', () => {
+  const app = new cdk.App()
+  // WHEN
+  const stack = new SimpleApp.SimpleAppStack(app, 'MyTestStack')
+  // THEN
+  const template = Template.fromStack(stack)
   template.hasResourceProperties('AWS::S3::Bucket', {})
+})
+
+test('Resource Match', () => {
+  const app = new cdk.App()
+  // WHEN
+  const stack = new SimpleApp.SimpleAppStack(app, 'MyTestStack')
+  // THEN
+  const template = Template.fromStack(stack)
+  template.hasResource('AWS::S3::Bucket', {})
 })
