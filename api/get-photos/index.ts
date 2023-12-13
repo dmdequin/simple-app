@@ -35,7 +35,8 @@ async function getPhotos (
   } catch (error) {
     return {
       statusCode: 500,
-      body: error.message
+      // assert that error is type Error
+      body: (error as Error).message
     }
   }
 }
