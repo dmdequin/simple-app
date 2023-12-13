@@ -5,7 +5,7 @@ import { aws_s3 as s3 } from 'aws-cdk-lib'
 import { Runtime } from 'aws-cdk-lib/aws-lambda'
 import path = require('path')
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment'
-// import * as sqs from 'aws-cdk-lib/aws-sqs'
+import { PolicyStatement } from 'aws-cdk-lib/aws-iam'
 
 export class SimpleAppStack extends cdk.Stack {
   constructor (scope: Construct, id: string, props?: cdk.StackProps) {
@@ -33,6 +33,21 @@ export class SimpleAppStack extends cdk.Stack {
         PHOTO_BUCKET_NAME: bucket.bucketName
       }
     })
+
+    // Create IAM rules
+    const bucketContainerPermissions = new PolicyStatement()
+    // add resources and actions
+    bucketContainerPermissions.addResources(bucket.bucketArn)
+    // add permission to list contents of this bucket
+    bucketContainerPermissions.addActions('s3:ListBucket')
+
+    const bucketPermissions = new PolicyStatement()
+    bucketPermissions.addResources(`${bucket.bucketArn}/*`)
+    bucketPermissions.addActions('s3:GetObject', 's3:PutObject')
+
+    // add function to policy permissions
+    getPhotos.addToRolePolicy(bucketPermissions)
+    getPhotos.addToRolePolicy(bucketContainerPermissions)
 
     // eslint-disable-next-line no-new
     new cdk.CfnOutput(this, 'MySimpleAppBucketNameExport', {
