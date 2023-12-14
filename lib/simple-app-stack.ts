@@ -7,6 +7,8 @@ import path = require('path')
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment'
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam'
 import * as apigwv2 from 'aws-cdk-lib/aws-apigatewayv2'
+import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+
 
 export class SimpleAppStack extends cdk.Stack {
   constructor (scope: Construct, id: string, props?: cdk.StackProps) {
@@ -60,10 +62,29 @@ export class SimpleAppStack extends cdk.Stack {
       createDefaultStage: true
     })
 
+    // Lambda integration
+    const lambdaIntegration = new HttpLambdaIntegration(
+      'lambdaIntegration',
+      getPhotos // give lambda above as handler
+    )
+
+    // add routes to Api gateway using integration
+    httpApi.addRoutes({
+      path: '/getAllPhotos',
+      methods: [ apigwv2.HttpMethod.GET ],
+      integration: lambdaIntegration
+    })
+
     // eslint-disable-next-line no-new
     new cdk.CfnOutput(this, 'MySimpleAppBucketNameExport', {
       value: bucket.bucketName,
       exportName: 'MySimpleAppBucketName'
+    })
+
+    // create url for API
+    new cdk.CfnOutput(this, 'MySimpleAppApi', {
+      value: httpApi.url!,
+      exportName: 'MySimpleAppApiEndpoint'
     })
   }
 }
