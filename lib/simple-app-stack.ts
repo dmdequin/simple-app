@@ -6,6 +6,7 @@ import { Runtime } from 'aws-cdk-lib/aws-lambda'
 import path = require('path')
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment'
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam'
+import * as apigwv2 from 'aws-cdk-lib/aws-apigatewayv2'
 
 export class SimpleAppStack extends cdk.Stack {
   constructor (scope: Construct, id: string, props?: cdk.StackProps) {
@@ -48,6 +49,16 @@ export class SimpleAppStack extends cdk.Stack {
     // add function to policy permissions
     getPhotos.addToRolePolicy(bucketPermissions)
     getPhotos.addToRolePolicy(bucketContainerPermissions)
+
+    // API gateway for lambda function
+    const httpApi = new apigwv2.HttpApi(this, 'MySimpleAppHttpApi', {
+      corsPreflight: {
+        allowOrigins: ['*'],
+        allowMethods: [apigwv2.CorsHttpMethod.GET]
+      },
+      apiName: 'photoApi',
+      createDefaultStage: true
+    })
 
     // eslint-disable-next-line no-new
     new cdk.CfnOutput(this, 'MySimpleAppBucketNameExport', {
