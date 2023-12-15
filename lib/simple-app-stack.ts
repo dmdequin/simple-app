@@ -8,6 +8,7 @@ import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment'
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam'
 import * as apigwv2 from 'aws-cdk-lib/aws-apigatewayv2'
 import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+import { BlockPublicAccess } from 'aws-cdk-lib/aws-s3'
 
 
 export class SimpleAppStack extends cdk.Stack {
@@ -22,10 +23,22 @@ export class SimpleAppStack extends cdk.Stack {
 
     // eslint-disable-next-line no-new
     new BucketDeployment(this, 'MySimpleAppPhotos', {
-      sources: [
-        Source.asset(path.join(__dirname, '..', 'photos'))
-      ],
+      sources: [Source.asset(path.join(__dirname, '..', 'photos'))],
       destinationBucket: bucket
+    })
+
+    // bucket to host website
+    const websiteBucket = new s3.Bucket(this, 'MySimpleAppWebsiteBucket', {
+      websiteIndexDocument: 'index.html',
+      publicReadAccess: true,
+      blockPublicAccess: BlockPublicAccess.BLOCK_ACLS
+    })
+
+    // copy react application to bucket for deployment
+    // eslint-disable-next-line no-new
+    new BucketDeployment(this, 'MySimpleAppWebsiteDeploy', {
+      sources: [Source.asset(path.join(__dirname, '..', 'frontend', 'build'))],
+      destinationBucket: websiteBucket
     })
 
     const getPhotos = new lambda.NodejsFunction(this, 'MySimpleAppLambda', {
@@ -41,7 +54,6 @@ export class SimpleAppStack extends cdk.Stack {
     const bucketContainerPermissions = new PolicyStatement()
     // add resources and actions
     bucketContainerPermissions.addResources(bucket.bucketArn)
-    // add permission to list contents of this bucket
     bucketContainerPermissions.addActions('s3:ListBucket')
 
     const bucketPermissions = new PolicyStatement()
@@ -79,6 +91,11 @@ export class SimpleAppStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'MySimpleAppBucketNameExport', {
       value: bucket.bucketName,
       exportName: 'MySimpleAppBucketName'
+    })
+
+    new cdk.CfnOutput(this, 'MySimpleAppWebsiteBucketNameExport', {
+      value: websiteBucket.bucketName,
+      exportName: 'MySimpleAppWebsiteBucketName'
     })
 
     // create url for API
