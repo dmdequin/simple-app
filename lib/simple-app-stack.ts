@@ -9,7 +9,7 @@ import { PolicyStatement } from 'aws-cdk-lib/aws-iam'
 import * as apigwv2 from 'aws-cdk-lib/aws-apigatewayv2'
 import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 import { BlockPublicAccess } from 'aws-cdk-lib/aws-s3'
-
+import { CloudFrontWebDistribution } from 'aws-cdk-lib/aws-cloudfront'
 
 export class SimpleAppStack extends cdk.Stack {
   constructor (scope: Construct, id: string, props?: cdk.StackProps) {
@@ -34,11 +34,24 @@ export class SimpleAppStack extends cdk.Stack {
       blockPublicAccess: BlockPublicAccess.BLOCK_ACLS
     })
 
+    // create cloudfront to customize url
+/*     const cloudFront = new CloudFrontWebDistribution(this, 'MySimpleAppDist', {
+      originConfigs: [
+        {
+          s3OriginSource: {
+            s3BucketSource: websiteBucket
+          },
+          behaviors: [{ isDefaultBehavior: true }]
+        },
+      ]
+    }) */
+
     // copy react application to bucket for deployment
     // eslint-disable-next-line no-new
     new BucketDeployment(this, 'MySimpleAppWebsiteDeploy', {
       sources: [Source.asset(path.join(__dirname, '..', 'frontend', 'build'))],
-      destinationBucket: websiteBucket
+      destinationBucket: websiteBucket,
+      // distribution: cloudFront
     })
 
     const getPhotos = new lambda.NodejsFunction(this, 'MySimpleAppLambda', {
@@ -97,6 +110,11 @@ export class SimpleAppStack extends cdk.Stack {
       value: websiteBucket.bucketName,
       exportName: 'MySimpleAppWebsiteBucketName'
     })
+
+  /*  new cdk.CfnOutput(this, 'MySimpleAppWebsiteUrl', {
+      value: cloudFront.distributionDomainName,
+      exportName: 'MySimpleAppUrl'
+    }) */
 
     // create url for API
     new cdk.CfnOutput(this, 'MySimpleAppApi', {
