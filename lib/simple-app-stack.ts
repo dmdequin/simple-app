@@ -35,23 +35,23 @@ export class SimpleAppStack extends cdk.Stack {
     })
 
     // create cloudfront to customize url
-/*     const cloudFront = new CloudFrontWebDistribution(this, 'MySimpleAppDist', {
+    const cloudFront = new CloudFrontWebDistribution(this, 'MySimpleAppDist', {
       originConfigs: [
         {
           s3OriginSource: {
             s3BucketSource: websiteBucket
           },
           behaviors: [{ isDefaultBehavior: true }]
-        },
+        }
       ]
-    }) */
+    })
 
     // copy react application to bucket for deployment
     // eslint-disable-next-line no-new
     new BucketDeployment(this, 'MySimpleAppWebsiteDeploy', {
       sources: [Source.asset(path.join(__dirname, '..', 'frontend', 'build'))],
       destinationBucket: websiteBucket,
-      // distribution: cloudFront
+      distribution: cloudFront
     })
 
     const getPhotos = new lambda.NodejsFunction(this, 'MySimpleAppLambda', {
@@ -106,18 +106,21 @@ export class SimpleAppStack extends cdk.Stack {
       exportName: 'MySimpleAppBucketName'
     })
 
+    // eslint-disable-next-line no-new
     new cdk.CfnOutput(this, 'MySimpleAppWebsiteBucketNameExport', {
       value: websiteBucket.bucketName,
       exportName: 'MySimpleAppWebsiteBucketName'
     })
 
-  /*  new cdk.CfnOutput(this, 'MySimpleAppWebsiteUrl', {
+    new cdk.CfnOutput(this, 'MySimpleAppWebsiteUrl', {
       value: cloudFront.distributionDomainName,
       exportName: 'MySimpleAppUrl'
-    }) */
+    })
 
     // create url for API
+    // eslint-disable-next-line no-new
     new cdk.CfnOutput(this, 'MySimpleAppApi', {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       value: httpApi.url!,
       exportName: 'MySimpleAppApiEndpoint'
     })
