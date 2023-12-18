@@ -112,6 +112,7 @@ export class SimpleAppStack extends cdk.Stack {
       exportName: 'MySimpleAppWebsiteBucketName'
     })
 
+    // eslint-disable-next-line no-new
     new cdk.CfnOutput(this, 'MySimpleAppWebsiteUrl', {
       value: cloudFront.distributionDomainName,
       exportName: 'MySimpleAppUrl'
