@@ -7,7 +7,7 @@ import path = require('path')
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment'
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam'
 import * as apigwv2 from 'aws-cdk-lib/aws-apigatewayv2'
-import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations'
 import { BlockPublicAccess } from 'aws-cdk-lib/aws-s3'
 import { CloudFrontWebDistribution } from 'aws-cdk-lib/aws-cloudfront'
 
@@ -96,7 +96,7 @@ export class SimpleAppStack extends cdk.Stack {
     // add routes to Api gateway using integration
     httpApi.addRoutes({
       path: '/getAllPhotos',
-      methods: [ apigwv2.HttpMethod.GET ],
+      methods: [apigwv2.HttpMethod.GET],
       integration: lambdaIntegration
     })
 
